@@ -70,12 +70,8 @@
                 <input type="tel" id="telegram" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Contoh: +6281234567890" required pattern="^\+628[0-9]{9,}$" value="+62">
             </div>
             <div class="mt-6 sm:text-right">
-          <a
-            href="Tele/telegram.html"
-            class="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"
-          >
-            Kirim lamaran
-          </a>
+          <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700"
+          >Kirim Lamaran</button>
         </div>
         </form>
     </div>
@@ -97,9 +93,8 @@
 
         // Simulasi pengiriman data (anda dapat mengganti dengan API call yang sesuai)
         setTimeout(() => {
-            document.getElementById("loadingAnimation").classList.add("hidden");
-            // Tampilkan halaman atau pesan konfirmasi
-            alert('Pendaftaran berhasil!'); // Anda bisa ganti ini dengan fungsi yang lebih baik
+            // Pindah ke halaman lain setelah 2 detik
+            window.location.href = "telegram.html"; // Ganti dengan nama file HTML yang sesuai
         }, 2000); // Simulasi delay 2 detik untuk pengiriman
     }
 </script>
