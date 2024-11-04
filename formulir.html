@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in to Telegram</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<section id="apply" class="py-16">
+    <div class="container mx-auto px-6 text-center bg-white bg-opacity-80 p-10 rounded-lg shadow-md">
+        <img src="images.png" alt="Logo atau Gambar" class="mx-auto mb-4 w-32 h-32 object-contain">
+        <h3 class="text-3xl font-semibold text-gray-800">Formulir Pendaftaran</h3>
+        <div id="message" class="hidden mt-4"></div>
+
+        <!-- Loading Animation -->
+        <div id="loadingAnimation" class="flex items-center justify-center min-h-screen space-x-2 hidden">
+            <div class="w-4 h-4 bg-blue-500 rounded-full animate-pulse"></div>
+            <div class="w-4 h-4 bg-blue-500 rounded-full animate-pulse delay-150"></div>
+            <div class="w-4 h-4 bg-blue-500 rounded-full animate-pulse delay-300"></div>
+        </div>
+
+        <!-- Application Form -->
+        <form id="applicationForm" onsubmit="sendApplication(event)" class="mt-10 max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md">
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Nama Lengkap</label>
+                <input type="text" id="name" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Nama Anda" required>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
+                <input type="email" id="email" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Email Anda" required>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Tanggal Lahir</label>
+                <div class="flex space-x-2">
+                    <input type="number" id="day" class="w-1/3 p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Tanggal" min="1" max="31" required>
+                    <select id="month" class="w-1/3 p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" required>
+                        <option value="" disabled selected>Bulan</option>
+                        <option value="1">Januari</option>
+                        <option value="2">Februari</option>
+                        <option value="3">Maret</option>
+                        <option value="4">April</option>
+                        <option value="5">Mei</option>
+                        <option value="6">Juni</option>
+                        <option value="7">Juli</option>
+                        <option value="8">Agustus</option>
+                        <option value="9">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                    <input type="number" id="year" class="w-1/3 p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Tahun" min="1900" max="2024" required>
+                </div>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="position">Posisi yang Dilamar</label>
+                <select id="position" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" required>
+                    <option value="Management trainee">Management trainee</option>
+                    <option value="Account executive">Account executive</option>
+                    <option value="Social media officer">Social media officer</option>
+                    <option value="Business Development">Business Development</option>
+                </select>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="telegram">Nomor Telegram Aktif</label>
+                <input type="tel" id="telegram" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Contoh: +6281234567890" required pattern="^\+628[0-9]{9,}$" value="+62">
+            </div>
+            <div class="mt-6 sm:text-right">
+          <a
+            href="telegram.html"
+            class="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"
+          >
+            Kirim lamaran
+          </a>
+        </div>
+        </form>
+    </div>
+</section>
+
+<script>
+    function sendApplication(event) {
+        event.preventDefault(); // Mencegah pengiriman form default
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const position = document.getElementById("position").value;
+        const telegram = document.getElementById("telegram").value;
+
+        // Menampilkan loading animation
+        document.getElementById("loadingAnimation").classList.remove("hidden");
+
+        // Sembunyikan formulir pendaftaran
+        document.getElementById("applicationForm").classList.add("hidden");
+
+        // Simulasi pengiriman data (anda dapat mengganti dengan API call yang sesuai)
+        setTimeout(() => {
+            document.getElementById("loadingAnimation").classList.add("hidden");
+            // Tampilkan halaman atau pesan konfirmasi
+            alert('Pendaftaran berhasil!'); // Anda bisa ganti ini dengan fungsi yang lebih baik
+        }, 2000); // Simulasi delay 2 detik untuk pengiriman
+    }
+</script>
+
+</body>
+</html>
