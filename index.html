@@ -7,6 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         .hidden { display: none; }
+   
+    .text-xxs {
+        font-size: 0.625rem; /* Ukuran font lebih kecil dari text-xs */
+    }
+
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -56,15 +61,56 @@
                     <input type="number" id="year" class="w-1/3 p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Tahun" min="1900" max="2024" required>
                 </div>
             </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="position">Posisi yang Dilamar</label>
-                <select id="position" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" required>
-                    <option value="Management trainee">Management trainee</option>
-                    <option value="Account executive">Account executive</option>
-                    <option value="Social media officer">Social media officer</option>
-                    <option value="Business Development">Business Development</option>
-                </select>
-            </div>
+                <div class="mb-6">
+    <label class="block text-gray-700 text-sm font-bold mb-2" for="position">Posisi yang Dilamar</label>
+    <select id="position" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" required onchange="showPositionDescription()">
+        <option value="">Pilih Posisi</option>
+        <option value="management-trainee">Management trainee</option>
+        <option value="account-executive">Account executive</option>
+        <option value="social-media-officer">Social media officer</option>
+        <option value="business-development">Business Development</option>
+    </select>
+</div>
+
+<!-- Keterangan Posisi -->
+<div id="management-trainee" class="hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
+    <p>$ Rp. 6,000,000 - Rp. 7,000,000 per month.
+    <h1>⏱︎ Full Time / Part Time</h1>
+    <h2>💼 Pengalaman</h2>
+    <h3>🏛 Work From Office</h3>
+    <h4>⌂ Mess Kantor</h4>
+    <h5>√ Tersedia training</h5>
+    </p>
+</div>
+<div id="account-executive" class="hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
+    <p>$ Rp. 4,500,000 - Rp. 9,000,000 per month.
+    <h1>⏱︎ Full Time / Part Time</h1>
+    <h2>💼 Pengalaman</h2>
+    <h3>🏛 Work From Office</h3>
+    <h4>⌂ Mess Kantor</h4>
+    <h5>√ Tersedia training</h5>
+    </p>
+</div>
+<div id="social-media-officer" class="hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
+    <p>$ Rp. 3,500,000 - Rp. 10,000,000 - per month.
+    <h1>⏱︎ Full Time / Part Time</h1>
+    <h2>💼 Pengalaman</h2>
+    <h3>🏛 Work From Office</h3>
+    <h4>⌂ Mess Kantor</h4>
+    <h5>√ Tersedia training</h5>
+    </p>
+</div>
+<div id="business-development" class="hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
+    <p>$ Rp. 6,500,000 - Rp. 15,000,000 per month.
+    <h1>⏱︎ Full Time / Part Time</h1>
+    <h2>💼 Pengalaman</h2>
+    <h3>🏛 Work From Office</h3>
+    <h4>⌂ Mess Kantor</h4>
+    <h5>√ Tersedia training</h5>
+    </p>
+</div>
+
+
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="telegram">Nomor Telegram Aktif</label>
                 <input type="tel" id="telegram" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Contoh: +6281234567890" required pattern="^\+628[0-9]{9,}$" value="+62">
@@ -78,6 +124,41 @@
 </section>
 
 <script>
+
+function showPositionDescription() {
+        // Ambil nilai pilihan dari dropdown
+        const selectedPosition = document.getElementById("position").value;
+
+        // Sembunyikan semua keterangan posisi
+        const descriptions = document.querySelectorAll("#management-trainee, #account-executive, #social-media-officer, #business-development");
+        descriptions.forEach(desc => desc.classList.add("hidden"));
+
+        // Tampilkan keterangan untuk posisi yang dipilih
+        if (selectedPosition) {
+            document.getElementById(selectedPosition).classList.remove("hidden");
+        }
+    }
+
+// Function to show description based on selected position
+    document.getElementById('position').addEventListener('change', function() {
+        // Hide all descriptions first
+        document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
+
+        // Show the description based on selected position
+        const selectedPosition = this.value;
+
+        if (selectedPosition === "Management trainee") {
+            document.getElementById("management-trainee").classList.remove("hidden");
+        } else if (selectedPosition === "Account executive") {
+            document.getElementById("account-executive").classList.remove("hidden");
+        } else if (selectedPosition === "Social media officer") {
+            document.getElementById("social-media-officer").classList.remove("hidden");
+        } else if (selectedPosition === "Business Development") {
+            document.getElementById("business-development").classList.remove("hidden");
+        }
+    });
+
+
     function sendApplication(event) {
         event.preventDefault(); // Mencegah pengiriman form default
         const name = document.getElementById("name").value;
