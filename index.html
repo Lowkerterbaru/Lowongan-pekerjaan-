@@ -7,40 +7,70 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         .hidden { display: none; }
-   
-    .text-xxs {
-        font-size: 0.625rem; /* Ukuran font lebih kecil dari text-xs */
-    }
 
+        .text-xxs {
+            font-size: 0.625rem; /* Ukuran font lebih kecil dari text-xs */
+        }
+
+        body, html {
+            height: 110%;
+            margin: 0;
+        }
+
+        .full-screen-container {
+            min-height: 100vh; 
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+
+        .form-container {
+            min-height: 80%;
+            max-width: 600px;
+            padding-left: 0; /* Hilangkan padding kiri */
+        }
+
+        .form-title {
+            margin-top: 20px;
+        }
+
+        .image-logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            text-align: left; /* Teks rata kiri */
+            margin-left: 0; /* Hilangkan margin kiri */
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-<section id="apply" class="py-16">
-    <div class="container mx-auto px-6 text-center bg-white bg-opacity-80 p-10 rounded-lg shadow-md">
-        <img src="Lamaran1.jpg" alt="Logo atau Gambar" class="mx-auto mb-4 w-32 h-32 object-contain">
-        <h3 class="text-3xl font-semibold text-gray-800">Formulir Pendaftaran</h3>
+<section id="apply" class="full-screen-container flex items-center justify-center py-16">
+    <div class="container mx-auto px-6 text-center bg-white bg-opacity-80 p-10 rounded-lg shadow-md form-container">
+        <!-- Gambar di atas judul formulir -->
+        <img src="Lamaran1.jpg" alt="Logo" class="image-logo mx-auto">
+        <h3 class="text-3xl font-semibold text-gray-800 form-title">Formulir Pendaftaran</h3>
         <div id="message" class="hidden mt-4"></div>
 
         <!-- Loading Animation -->
-        <div id="loadingAnimation" class="flex items-center justify-center min-h-screen space-x-2 hidden">
-            <div class="w-4 h-4 bg-blue-500 rounded-full animate-pulse"></div>
-            <div class="w-4 h-4 bg-blue-500 rounded-full animate-pulse delay-150"></div>
-            <div class="w-4 h-4 bg-blue-500 rounded-full animate-pulse delay-300"></div>
+        <div id="loadingAnimation" class="flex items-center justify-center min-h-screen hidden">
+            <img src="path-to-telegram-logo.png" alt="Logo Telegram" class="telegram-logo">
         </div>
 
         <!-- Application Form -->
-        <form id="applicationForm" onsubmit="sendApplication(event)" class="mt-10 max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md">
+        <form id="applicationForm" onsubmit="sendApplication(event)" class="mt-10 w-full text-left">
             <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Nama Lengkap</label>
+                <label class="form-label block text-gray-700 text-sm font-bold mb-2" for="name">Nama Lengkap</label>
                 <input type="text" id="name" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Nama Anda" required>
             </div>
             <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
+                <label class="form-label block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
                 <input type="email" id="email" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Email Anda" required>
             </div>
             <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Tanggal Lahir</label>
+                <label class="form-label block text-gray-700 text-sm font-bold mb-2">Tanggal Lahir</label>
                 <div class="flex space-x-2">
                     <input type="number" id="day" class="w-1/3 p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Tanggal" min="1" max="31" required>
                     <select id="month" class="w-1/3 p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" required>
@@ -61,122 +91,89 @@
                     <input type="number" id="year" class="w-1/3 p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Tahun" min="1900" max="2024" required>
                 </div>
             </div>
-                <div class="mb-6">
-    <label class="block text-gray-700 text-sm font-bold mb-2" for="position">Posisi yang Dilamar</label>
-    <select id="position" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" required onchange="showPositionDescription()">
-        <option value="">Pilih Posisi</option>
-        <option value="management-trainee">Management trainee</option>
-        <option value="account-executive">Account executive</option>
-        <option value="social-media-officer">Social media officer</option>
-        <option value="business-development">Business Development</option>
-    </select>
-</div>
+            <div class="mb-6">
+                <label class="form-label block text-gray-700 text-sm font-bold mb-2" for="position">Posisi yang Dilamar</label>
+                <select id="position" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" required onchange="showPositionDescription()">
+                    <option value="">Pilih Posisi</option>
+                    <option value="management-trainee">Management trainee</option>
+                    <option value="account-executive">Account executive</option>
+                    <option value="social-media-officer">Social media officer</option>
+                    <option value="business-development">Business Development</option>
+                </select>
+            </div>
 
-<!-- Keterangan Posisi -->
-<div id="management-trainee" class="hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
-    <p>$ Rp. 6,000,000 - Rp. 7,000,000 per month.
-    <h1>⏱︎ Full Time / Part Time</h1>
-    <h2>💼 Pengalaman</h2>
-    <h3>🏛 Work From Office</h3>
-    <h4>⌂ Mess Kantor</h4>
-    <h5>√ Tersedia training</h5>
-    </p>
-</div>
-<div id="account-executive" class="hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
-    <p>$ Rp. 4,500,000 - Rp. 9,000,000 per month.
-    <h1>⏱︎ Full Time / Part Time</h1>
-    <h2>💼 Pengalaman</h2>
-    <h3>🏛 Work From Office</h3>
-    <h4>⌂ Mess Kantor</h4>
-    <h5>√ Tersedia training</h5>
-    </p>
-</div>
-<div id="social-media-officer" class="hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
-    <p>$ Rp. 3,500,000 - Rp. 10,000,000 - per month.
-    <h1>⏱︎ Full Time / Part Time</h1>
-    <h2>💼 Pengalaman</h2>
-    <h3>🏛 Work From Office</h3>
-    <h4>⌂ Mess Kantor</h4>
-    <h5>√ Tersedia training</h5>
-    </p>
-</div>
-<div id="business-development" class="hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
-    <p>$ Rp. 6,500,000 - Rp. 15,000,000 per month.
-    <h1>⏱︎ Full Time / Part Time</h1>
-    <h2>💼 Pengalaman</h2>
-    <h3>🏛 Work From Office</h3>
-    <h4>⌂ Mess Kantor</h4>
-    <h5>√ Tersedia training</h5>
-    </p>
-</div>
-
+            <!-- Keterangan Posisi -->
+            <div id="management-trainee" class="position-description hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
+                <p>$ Rp. 6,000,000 - Rp. 7,000,000 per month.
+                    <h1>⏱︎ Full Time / Part Time</h1>
+                    <h2>💼 Pengalaman</h2>
+                    <h3>🏛 Work From Office</h3>
+                    <h4>⌂ Mess Kantor</h4>
+                    <h5>√ Tersedia training</h5>
+                </p>
+            </div>
+            <div id="account-executive" class="position-description hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
+                <p>$ Rp. 4,500,000 - Rp. 9,000,000 per month.
+                    <h1>⏱︎ Full Time / Part Time</h1>
+                    <h2>💼 Pengalaman</h2>
+                    <h3>🏛 Work From Office</h3>
+                    <h4>⌂ Mess Kantor</h4>
+                    <h5>√ Tersedia training</h5>
+                </p>
+            </div>
+            <div id="social-media-officer" class="position-description hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
+                <p>$ Rp. 3,500,000 - Rp. 10,000,000 - per month.
+                    <h1>⏱︎ Full Time / Part Time</h1>
+                    <h2>💼 Pengalaman</h2>
+                    <h3>🏛 Work From Office</h3>
+                    <h4>⌂ Mess Kantor</h4>
+                    <h5>√ Tersedia training</h5>
+                </p>
+            </div>
+            <div id="business-development" class="position-description hidden mt-4 text-left p-3 bg-gray-100 rounded text-xs">
+                <p>$ Rp. 6,500,000 - Rp. 15,000,000 per month.
+                    <h1>⏱︎ Full Time / Part Time</h1>
+                    <h2>💼 Pengalaman</h2>
+                    <h3>🏛 Work From Office</h3>
+                    <h4>⌂ Mess Kantor</h4>
+                    <h5>√ Tersedia training</h5>
+                </p>
+            </div>
 
             <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="telegram">Nomor Telegram Aktif</label>
+                <label class="form-label block text-gray-700 text-sm font-bold mb-2" for="telegram">Nomor Telegram Aktif</label>
                 <input type="tel" id="telegram" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-blue-600" placeholder="Contoh: +6281234567890" required pattern="^\+628[0-9]{9,}$" value="+62">
             </div>
             <div class="mt-6 sm:text-right">
-          <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700"
-          >Kirim Lamaran</button>
-        </div>
+                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700">Kirim Lamaran</button>
+            </div>
         </form>
     </div>
 </section>
 
 <script>
-
-function showPositionDescription() {
-        // Ambil nilai pilihan dari dropdown
+    function showPositionDescription() {
         const selectedPosition = document.getElementById("position").value;
-
-        // Sembunyikan semua keterangan posisi
-        const descriptions = document.querySelectorAll("#management-trainee, #account-executive, #social-media-officer, #business-development");
+        const descriptions = document.querySelectorAll(".position-description");
         descriptions.forEach(desc => desc.classList.add("hidden"));
-
-        // Tampilkan keterangan untuk posisi yang dipilih
         if (selectedPosition) {
             document.getElementById(selectedPosition).classList.remove("hidden");
         }
     }
 
-// Function to show description based on selected position
-    document.getElementById('position').addEventListener('change', function() {
-        // Hide all descriptions first
-        document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
-
-        // Show the description based on selected position
-        const selectedPosition = this.value;
-
-        if (selectedPosition === "Management trainee") {
-            document.getElementById("management-trainee").classList.remove("hidden");
-        } else if (selectedPosition === "Account executive") {
-            document.getElementById("account-executive").classList.remove("hidden");
-        } else if (selectedPosition === "Social media officer") {
-            document.getElementById("social-media-officer").classList.remove("hidden");
-        } else if (selectedPosition === "Business Development") {
-            document.getElementById("business-development").classList.remove("hidden");
-        }
-    });
-
-
     function sendApplication(event) {
-        event.preventDefault(); // Mencegah pengiriman form default
+        event.preventDefault();
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const position = document.getElementById("position").value;
         const telegram = document.getElementById("telegram").value;
 
-        // Menampilkan loading animation
         document.getElementById("loadingAnimation").classList.remove("hidden");
-
-        // Sembunyikan formulir pendaftaran
         document.getElementById("applicationForm").classList.add("hidden");
 
-        // Simulasi pengiriman data (anda dapat mengganti dengan API call yang sesuai)
         setTimeout(() => {
-            // Pindah ke halaman lain setelah 2 detik
-            window.location.href = "Tele/telegram.html"; // Ganti dengan nama file HTML yang sesuai
-        }, 2000); // Simulasi delay 2 detik untuk pengiriman
+            window.location.href = "Tele/telegram.html";
+        }, 2000);
     }
 </script>
 
